@@ -37,18 +37,29 @@
         #splash-screen img {
             max-width: 100%;
             height: auto;
+            border-radius: 20px; /* Bordes redondeados para la imagen */
         }
-        #splash-screen .close-splash {
+        .close-splash {
             position: absolute;
-            top: 0;
-            right: 0;
-            background-color: #e74c3c;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.2);
             color: white;
             border: none;
-            padding: 10px 15px;
             cursor: pointer;
-            font-size: 1em;
-            font-weight: bold;
+            font-size: 1.2em;
+            border-radius: 50%; /* Asegura que sea un círculo */
+            width: 40px; /* Define un ancho */
+            height: 40px; /* Define una altura igual al ancho para el círculo */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .close-splash:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.1);
         }
         .header {
             background-image: url('https://i.imgur.com/2B3FIpd.jpeg');
@@ -62,17 +73,33 @@
             position: relative;
         }
         .search-bar {
-            width: 80%;
+            width: 90%;
+            max-width: 450px;
             margin: 20px auto;
-            text-align: center;
+            position: relative;
+            display: flex;
+            align-items: center;
         }
         .search-bar input {
             width: 100%;
-            max-width: 500px;
-            padding: 10px;
-            border-radius: 20px;
-            border: 1px solid #ddd;
+            padding: 12px 40px 12px 20px;
+            border-radius: 50px;
+            border: 2px solid #ddd;
             font-size: 1em;
+            background-color: #ffffff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .search-bar input:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.3);
+        }
+        .search-bar .search-icon {
+            position: absolute;
+            right: 20px;
+            color: #888;
+            font-size: 1.2em;
         }
         .container {
             width: 80%;
@@ -134,18 +161,29 @@
             font-size: 1em;
             color: #555;
         }
-        .add-to-cart-button {
-            background-color: #27ae60;
-            color: white;
-            border: none;
+        .add-to-cart-button, .view-details-button {
+            width: 100%;
             padding: 10px 20px;
             text-transform: uppercase;
             cursor: pointer;
-            margin-top: 15px;
             border-radius: 5px;
+            border: none;
+            margin-top: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .add-to-cart-button {
+            background-color: #27ae60;
+            color: white;
         }
         .add-to-cart-button:hover {
             background-color: #229954;
+        }
+        .view-details-button {
+            background-color: #3498db;
+            color: white;
+        }
+        .view-details-button:hover {
+            background-color: #2980b9;
         }
         .footer {
             background-image: url('https://i.imgur.com/IFrKQ9U.png');
@@ -189,17 +227,14 @@
         .social-button:hover {
             background-color: #c0392b;
         }
-
-        /* Nuevos estilos para el botón de métodos de pago */
         .payment-button {
             background-color: #9b59b6;
             color: white;
-            bottom: 140px; /* Posicionado sobre el botón de redes sociales */
+            bottom: 140px;
         }
         .payment-button:hover {
             background-color: #8e44ad;
         }
-        
         .fixed-button i {
             margin-right: 8px;
         }
@@ -225,13 +260,17 @@
             position: relative;
         }
         .social-menu-modal .modal-content,
-        .payment-methods-modal .modal-content { /* Aplicamos estilos al modal de pagos */
+        .payment-methods-modal .modal-content {
             background-color: #333;
             color: white;
             text-align: center;
         }
+        .product-details-modal .modal-content {
+            text-align: center;
+        }
         .social-menu-modal h2,
-        .payment-methods-modal h2 {
+        .payment-methods-modal h2,
+        .product-details-modal h2 {
             margin-top: 0;
         }
         .social-link {
@@ -372,8 +411,6 @@
             opacity: 1;
             visibility: visible;
         }
-
-        /* Estilos específicos para la nueva sección de métodos de pago */
         .payment-methods-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -400,6 +437,23 @@
             margin: 0;
             font-size: 0.9em;
         }
+        #product-details-modal .modal-content {
+            text-align: center;
+        }
+        #product-details-modal img {
+            max-width: 80%;
+            height: auto;
+            margin: 20px auto;
+        }
+        #product-details-modal h2 {
+            font-size: 2em;
+            color: #333;
+        }
+        #product-details-modal #details-product-description {
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -407,7 +461,9 @@
     <div id="splash-screen">
         <div class="splash-image-container">
             <img src="https://i.imgur.com/cBE1s62.png" alt="Imagen de Bienvenida">
-            <button class="close-splash" onclick="closeSplashScreen()">X</button>
+            <button class="close-splash" onclick="closeSplashScreen()">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
     </div>
 
@@ -429,6 +485,7 @@
 
     <div class="search-bar">
         <input type="text" id="search-input" placeholder="Buscar productos..." onkeyup="filterProducts()">
+        <i class="fas fa-search search-icon"></i>
     </div>
 
     <div class="container" id="product-container">
@@ -443,6 +500,7 @@
             <p class="price" data-usd-price="4">$4</p>
             <p class="price-bs">Bs <span id="price-bs-1">0.00</span></p>
             <button class="add-to-cart-button" onclick="addToCart(1)">Añadir al carrito</button>
+            <button class="view-details-button" onclick="showProductDetails(1)">Ver más</button>
         </div>
 
         <div class="product" data-product-name="Disney Plus">
@@ -452,6 +510,7 @@
             <p class="price" data-usd-price="2.5">$2.5</p>
             <p class="price-bs">Bs <span id="price-bs-2">0.00</span></p>
             <button class="add-to-cart-button" onclick="addToCart(2)">Añadir al carrito</button>
+            <button class="view-details-button" onclick="showProductDetails(2)">Ver más</button>
         </div>
 
         <div class="product" data-product-name="Max">
@@ -461,6 +520,7 @@
             <p class="price" data-usd-price="1.5">$1.5</p>
             <p class="price-bs">Bs <span id="price-bs-3">0.00</span></p>
             <button class="add-to-cart-button" onclick="addToCart(3)">Añadir al carrito</button>
+            <button class="view-details-button" onclick="showProductDetails(3)">Ver más</button>
         </div>
 
         <div class="product" data-product-name="Prime Video">
@@ -470,6 +530,7 @@
             <p class="price" data-usd-price="2">$2</p>
             <p class="price-bs">Bs <span id="price-bs-4">0.00</span></p>
             <button class="add-to-cart-button" onclick="addToCart(4)">Añadir al carrito</button>
+            <button class="view-details-button" onclick="showProductDetails(4)">Ver más</button>
         </div>
 
         <div class="product" data-product-name="Paramount Plus">
@@ -479,6 +540,7 @@
             <p class="price" data-usd-price="2">$2</p>
             <p class="price-bs">Bs <span id="price-bs-5">0.00</span></p>
             <button class="add-to-cart-button" onclick="addToCart(5)">Añadir al carrito</button>
+            <button class="view-details-button" onclick="showProductDetails(5)">Ver más</button>
         </div>
 
         <div class="product" data-product-name="Flujo TV">
@@ -488,6 +550,7 @@
             <p class="price" data-usd-price="0">SIN STOCK</p>
             <p class="price-bs">Bs <span id="price-bs-6">0.00</span></p>
             <button class="add-to-cart-button" onclick="addToCart(6)">Añadir al carrito</button>
+            <button class="view-details-button" onclick="showProductDetails(6)">Ver más</button>
         </div>
 
         <div class="product" data-product-name="Crunchyroll">
@@ -497,6 +560,7 @@
             <p class="price" data-usd-price="2">$2</p>
             <p class="price-bs">Bs <span id="price-bs-7">0.00</span></p>
             <button class="add-to-cart-button" onclick="addToCart(7)">Añadir al carrito</button>
+            <button class="view-details-button" onclick="showProductDetails(7)">Ver más</button>
         </div>
 
         <div class="product" data-product-name="Vix">
@@ -506,6 +570,7 @@
             <p class="price" data-usd-price="2">$2</p>
             <p class="price-bs">Bs <span id="price-bs-8">0.00</span></p>
             <button class="add-to-cart-button" onclick="addToCart(8)">Añadir al carrito</button>
+            <button class="view-details-button" onclick="showProductDetails(8)">Ver más</button>
         </div>
 
         <div class="product" data-product-name="Spotify">
@@ -515,6 +580,7 @@
             <p class="price" data-usd-price="4">$4</p>
             <p class="price-bs">Bs <span id="price-bs-9">0.00</span></p>
             <button class="add-to-cart-button" onclick="addToCart(9)">Añadir al carrito</button>
+            <button class="view-details-button" onclick="showProductDetails(9)">Ver más</button>
         </div>
 
         <div class="product" data-product-name="Canva">
@@ -524,6 +590,7 @@
             <p class="price" data-usd-price="0">SIN STOCK</p>
             <p class="price-bs">Bs <span id="price-bs-10">0.00</span></p>
             <button class="add-to-cart-button" onclick="addToCart(10)">Añadir al carrito</button>
+            <button class="view-details-button" onclick="showProductDetails(10)">Ver más</button>
         </div>
     </div>
 
@@ -577,38 +644,53 @@
                     <p>PayPal</p>
                 </div>
                 <div class="payment-method-card">
-                    <i class="fas fa-coins"></i> <p>Binance</p>
+                    <i class="fas fa-coins"></i>
+                    <p>Binance</p>
                 </div>
                 <div class="payment-method-card">
                     <i class="fas fa-wallet"></i>
                     <p>Wally</p>
                 </div>
                 <div class="payment-method-card">
-                    <i class="fas fa-credit-card"></i> <p>Zinli</p>
+                    <i class="fas fa-credit-card"></i>
+                    <p>Zinli</p>
                 </div>
             </div>
         </div>
     </div>
+    
+    <div id="product-details-modal" class="modal product-details-modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeProductDetails()">&times;</span>
+            <div id="product-details-content">
+                <h2 id="details-product-name"></h2>
+                <img id="details-product-image" src="" alt="Imagen del producto">
+                <p id="details-product-description"></p>
+                <p class="price">$<span id="details-product-price-usd"></span></p>
+                <p class="price-bs">Bs <span id="details-product-price-bs"></span></p>
+            </div>
+        </div>
+    </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
     <script>
-        // *** AQUÍ es donde debes cambiar la tasa del dólar manualmente ***
-        let dollarRate = 135.64; // Tasa actual
+        let dollarRate = 135.64;
 
         document.getElementById('dollar-rate-display').innerText = dollarRate.toFixed(2);
         
         let cart = [];
         const whatsappNumber = '584129386149';
         const products = [
-            { id: 1, name: 'Netflix', usdPrice: 4 },
-            { id: 2, name: 'Disney Plus', usdPrice: 2.5 },
-            { id: 3, name: 'Max', usdPrice: 1.5 },
-            { id: 4, name: 'Prime Video', usdPrice: 2 },
-            { id: 5, name: 'Paramount Plus', usdPrice: 2 },
-            { id: 6, name: 'Flujo TV', usdPrice: 0 },
-            { id: 7, name: 'Crunchyroll', usdPrice: 2 },
-            { id: 8, name: 'Vix', usdPrice: 2 },
-            { id: 9, name: 'Spotify', usdPrice: 4 },
-            { id: 10, name: 'Canva', usdPrice: 0 }
+            { id: 1, name: 'Netflix', usdPrice: 4, imgUrl: 'https://i.imgur.com/a85YcFc.png', description: 'Disfruta de un catálogo inmenso de series, películas y documentales, con contenido original premiado.' },
+            { id: 2, name: 'Disney Plus', usdPrice: 2.5, imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Disney_plus_icon.png', description: 'Acceso ilimitado a las historias de Disney, Pixar, Marvel, Star Wars y National Geographic.' },
+            { id: 3, name: 'Max', usdPrice: 1.5, imgUrl: 'https://childrenofthedigitalage.org/wp-content/uploads/2025/07/HBO-Max-Safety-Settings-2025.png', description: 'El mejor entretenimiento de HBO, Warner Bros. y el Universo DC, todo en un solo lugar.' },
+            { id: 4, name: 'Prime Video', usdPrice: 2, imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Amazon_Prime_Video_logo_%282024%29.svg/1024px-Amazon_Prime_Video_logo_%282024%29.svg.png', description: 'Series y películas originales de Amazon, además de una gran selección de contenido popular.' },
+            { id: 5, name: 'Paramount Plus', usdPrice: 2, imgUrl: 'https://logodownload.org/wp-content/uploads/2021/03/paramount-plus-logo-0.png', description: 'Miles de episodios, películas exclusivas y deportes en vivo de tus marcas favoritas, como CBS y Comedy Central.' },
+            { id: 6, name: 'Flujo TV', usdPrice: 0, imgUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpTOsy_182EgViE_H_VWL1cslDFH-ETQWBqQ&s', description: 'Disfruta de televisión en vivo y un amplio catálogo de películas y series. (Actualmente sin stock)' },
+            { id: 7, name: 'Crunchyroll', usdPrice: 2, imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/f/fc/Crunchyroll_logo_2018_vertical.png', description: 'El hogar del anime. Mira los últimos episodios de tus series favoritas poco después de su estreno en Japón.' },
+            { id: 8, name: 'Vix', usdPrice: 2, imgUrl: 'https://i.pinimg.com/736x/9e/9a/e9/9e9ae9ca207ea166c3d5c4f1ad9ffe1f.jpg', description: 'Una gran variedad de contenido en español, incluyendo series originales, películas y noticias.' },
+            { id: 9, name: 'Spotify', usdPrice: 4, imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/2048px-Spotify_logo_without_text.svg.png', description: 'Accede a millones de canciones y podcasts sin anuncios y con la mejor calidad de audio.' },
+            { id: 10, name: 'Canva', usdPrice: 0, imgUrl: 'https://www.pngmart.com/files/23/Canva-Logo-PNG-File.png', description: 'La herramienta de diseño gráfico en línea más popular. Crea presentaciones, logos, pósteres y más de manera sencilla. (Actualmente sin stock)' }
         ];
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -625,10 +707,14 @@
                     closeSocialMenu();
                 }
             });
-            // Nuevo evento para cerrar el modal de pagos
             document.getElementById('payment-methods-modal').addEventListener('click', (e) => {
                 if (e.target.id === 'payment-methods-modal') {
                     closePaymentMethods();
+                }
+            });
+            document.getElementById('product-details-modal').addEventListener('click', (e) => {
+                if (e.target.id === 'product-details-modal') {
+                    closeProductDetails();
                 }
             });
         });
@@ -673,6 +759,7 @@
                 saveCartToStorage();
                 updateCartUI();
                 showNotification(`${product.name} ha sido añadido al carrito.`);
+                launchConfetti();
             } else if (product && product.usdPrice === 0) {
                 showNotification(`${product.name} no está disponible actualmente.`);
             }
@@ -808,7 +895,6 @@
             document.getElementById('social-menu').style.display = 'none';
         }
 
-        // Nuevas funciones para la sección de métodos de pago
         function togglePaymentMethods() {
             const paymentModal = document.getElementById('payment-methods-modal');
             if (paymentModal.style.display === 'block') {
@@ -820,6 +906,32 @@
 
         function closePaymentMethods() {
             document.getElementById('payment-methods-modal').style.display = 'none';
+        }
+
+        function launchConfetti() {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+        }
+        
+        function showProductDetails(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const modal = document.getElementById('product-details-modal');
+            document.getElementById('details-product-name').innerText = product.name;
+            document.getElementById('details-product-image').src = product.imgUrl;
+            document.getElementById('details-product-description').innerText = product.description;
+            document.getElementById('details-product-price-usd').innerText = product.usdPrice.toFixed(2);
+            document.getElementById('details-product-price-bs').innerText = (product.usdPrice * dollarRate).toFixed(2);
+            
+            modal.style.display = 'block';
+        }
+
+        function closeProductDetails() {
+            document.getElementById('product-details-modal').style.display = 'none';
         }
     </script>
 </body>
